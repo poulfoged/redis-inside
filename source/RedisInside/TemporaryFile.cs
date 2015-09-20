@@ -32,7 +32,8 @@ namespace PdfExtract
                 return;
             try
             {
-                _fileInfo.Delete();
+                if (disposing)
+                    _fileInfo.Delete();
             }
             catch (Exception ex)
             {

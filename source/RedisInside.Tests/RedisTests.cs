@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using StackExchange.Redis;
 
@@ -12,7 +13,7 @@ namespace ElasticsearchInside.Tests
         {
             using (var redis = new Redis(i => i.Port(1234).LogTo(message => Trace.WriteLine(message))))
             {
-                Assert.That(redis.Node.EndsWith("1234"));
+                Assert.That(redis.Endpoint.ToString().EndsWith("1234"));
             }
 
         }
@@ -21,9 +22,8 @@ namespace ElasticsearchInside.Tests
         public void Can_start()
         {
             using (var redis = new Redis())
+            using (var client = ConnectionMultiplexer.Connect(redis.Endpoint.ToString()))
             {
-                var client = ConnectionMultiplexer.Connect(redis.Node);
-
                 client.GetDatabase().StringSet("key", "value");
 
                 var value = client.GetDatabase().StringGet("key");
@@ -38,14 +38,43 @@ namespace ElasticsearchInside.Tests
         {
             using (var redis = new Redis())
             using (var redis2 = new Redis())
+            using (var client = ConnectionMultiplexer.Connect(redis.Endpoint + "," + redis2.Endpoint))
             {
-                var client = ConnectionMultiplexer.Connect(redis.Node + "," + redis2.Node);
-
                 client.GetDatabase().StringSet("key", "value");
-
                 var value = client.GetDatabase().StringGet("key");
 
                 Assert.That(value.ToString(), Is.EqualTo("value"));
+            }
+        }
+
+        [Test]
+        public async Task Can_start_slave()
+        {
+
+            using (var redis = new Redis())
+            using (var redis2 = new Redis())
+            {
+                ////Arrange
+                // configure slave
+                var config = new ConfigurationOptions { AllowAdmin = true };
+                config.EndPoints.Add(redis.Endpoint);
+                config.EndPoints.Add(redis2.Endpoint);
+                using (var client = ConnectionMultiplexer.Connect(config))
+                    await client.GetServer(redis.Endpoint).SlaveOfAsync(redis2.Endpoint);
+
+                // new single-node client
+                string actualValue;
+                using (var client = ConnectionMultiplexer.Connect(redis2.Endpoint.ToString()))
+                {
+
+                    await client.GetDatabase().StringSetAsync("key", "value");
+
+                    ////Act
+                    actualValue = await client.GetDatabase().StringGetAsync("key");
+                }
+
+                ////Assert
+                Assert.That(actualValue, Is.EqualTo("value"));
             }
 
         }
