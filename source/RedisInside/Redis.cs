@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using ElasticsearchInside.Executables;
 using PdfExtract;
 
@@ -41,34 +43,40 @@ namespace ElasticsearchInside
             process.BeginOutputReadLine();
         }
 
-        public string Node 
+        public EndPoint Endpoint
         {
-            get { return "127.0.0.1:" + config.port; }
+            get {return new IPEndPoint(IPAddress.Loopback, config.port);}
         }
-
 
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
+
+
             try
             {
+                process.CancelOutputRead();
                 process.Kill();
                 process.WaitForExit(2000);
 
-                if (executable != null)
+                if (disposing)
+                {
+                    process.Dispose();
                     executable.Dispose();
-            
+                }
+                
             }
             catch (Exception ex)
             {
                 config.logger.Invoke(ex.ToString());
             }
+            
             _disposed = true;
             
         }
 
-         ~Redis()
+        ~Redis()
         {
             Dispose(false);
         }
