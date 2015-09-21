@@ -18,8 +18,6 @@ namespace RedisInside
 
         public Redis(Action<IConfig> configuration = null)
         {
-            ExperimentalCleanup = true;
-
             if (configuration != null)
                 configuration(config);
 
@@ -28,7 +26,7 @@ namespace RedisInside
             var processStartInfo = new ProcessStartInfo(" \"" + executable.Info.FullName + " \"")
             {
                 UseShellExecute = false,
-                Arguments = string.Format("--port {0} --bind 127.0.0.1", config.port),
+                Arguments = string.Format("--port {0} --bind 127.0.0.1 --persistence-available no", config.port),
                 WindowStyle = ProcessWindowStyle.Maximized,
                 CreateNoWindow = true,
                 LoadUserProfile = false,
@@ -46,14 +44,8 @@ namespace RedisInside
         [Obsolete("Use Endpoint Instead")]
         public string Node
         {
-            get
-            {
-                return "127.0.0.1:" + (object)this.config.port;
-            }
+            get { return Endpoint.ToString(); }
         }
-
-        [Obsolete]
-        public bool ExperimentalCleanup { get; set; }
 
         public EndPoint Endpoint
         {
@@ -68,9 +60,7 @@ namespace RedisInside
 
             try
             {
-                if (ExperimentalCleanup)
-                    process.CancelOutputRead();
-
+                process.CancelOutputRead();
                 process.Kill();
                 process.WaitForExit(2000);
 

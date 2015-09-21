@@ -13,6 +13,8 @@
     <copyright>Copyright 2015</copyright>
     <tags>redis, integration, redis-64, caching</tags>
     <releaseNotes>
+2.8.2101.5 Turned off memory-mapped file
+2.8.2101.4 New cleanup moved to experimental
 2.8.2101.3 Reversed change to cleanup - was causing build errors
 2.8.2101.2 Namespace was wrong - copy-paste error
 2.8.2101.1 Fixed a problem with dispose causing resharper test-runner to hang
