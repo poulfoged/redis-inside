@@ -2,11 +2,9 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using ElasticsearchInside.Executables;
-using PdfExtract;
+using RedisInside.Executables;
 
-namespace ElasticsearchInside
+namespace RedisInside
 {
     /// <summary>
     /// Extracts text from PDF's
@@ -20,6 +18,8 @@ namespace ElasticsearchInside
 
         public Redis(Action<IConfig> configuration = null)
         {
+            ExperimentalCleanup = true;
+
             if (configuration != null)
                 configuration(config);
 
@@ -43,6 +43,18 @@ namespace ElasticsearchInside
             process.BeginOutputReadLine();
         }
 
+        [Obsolete("Use Endpoint Instead")]
+        public string Node
+        {
+            get
+            {
+                return "127.0.0.1:" + (object)this.config.port;
+            }
+        }
+
+        [Obsolete]
+        public bool ExperimentalCleanup { get; set; }
+
         public EndPoint Endpoint
         {
             get {return new IPEndPoint(IPAddress.Loopback, config.port);}
@@ -56,7 +68,9 @@ namespace ElasticsearchInside
 
             try
             {
-                process.CancelOutputRead();
+                if (ExperimentalCleanup)
+                    process.CancelOutputRead();
+
                 process.Kill();
                 process.WaitForExit(2000);
 

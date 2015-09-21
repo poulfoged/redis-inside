@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace PdfExtract
+namespace RedisInside
 {
     public class TemporaryFile : IDisposable
     {
