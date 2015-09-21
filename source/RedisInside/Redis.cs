@@ -2,11 +2,9 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using ElasticsearchInside.Executables;
-using PdfExtract;
+using RedisInside.Executables;
 
-namespace ElasticsearchInside
+namespace RedisInside
 {
     /// <summary>
     /// Extracts text from PDF's
@@ -28,7 +26,7 @@ namespace ElasticsearchInside
             var processStartInfo = new ProcessStartInfo(" \"" + executable.Info.FullName + " \"")
             {
                 UseShellExecute = false,
-                Arguments = string.Format("--port {0} --bind 127.0.0.1", config.port),
+                Arguments = string.Format("--port {0} --bind 127.0.0.1 --persistence-available no", config.port),
                 WindowStyle = ProcessWindowStyle.Maximized,
                 CreateNoWindow = true,
                 LoadUserProfile = false,
@@ -41,6 +39,12 @@ namespace ElasticsearchInside
             process.ErrorDataReceived += (sender, eventargs) => config.logger.Invoke(eventargs.Data);
             process.OutputDataReceived += (sender, eventargs) => config.logger.Invoke(eventargs.Data);
             process.BeginOutputReadLine();
+        }
+
+        [Obsolete("Use Endpoint Instead")]
+        public string Node
+        {
+            get { return Endpoint.ToString(); }
         }
 
         public EndPoint Endpoint

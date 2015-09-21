@@ -1,4 +1,4 @@
-﻿namespace ElasticsearchInside.Executables
+﻿namespace RedisInside.Executables
 {
     internal interface RessourceTarget
     {

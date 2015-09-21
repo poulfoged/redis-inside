@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ElasticsearchInside
+namespace RedisInside
 {
     public interface IConfig
     {

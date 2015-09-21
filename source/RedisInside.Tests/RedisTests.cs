@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using StackExchange.Redis;
 
-namespace ElasticsearchInside.Tests
+namespace RedisInside.Tests
 {
     [TestFixture]
     public class RedisTests
@@ -76,7 +78,6 @@ namespace ElasticsearchInside.Tests
                 ////Assert
                 Assert.That(actualValue, Is.EqualTo("value"));
             }
-
         }
     }
 }

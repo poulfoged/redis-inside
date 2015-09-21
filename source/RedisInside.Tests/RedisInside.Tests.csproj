@@ -7,8 +7,8 @@
     <ProjectGuid>{2BF22A5A-26A7-4AC9-9AAF-305F8ED96776}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ElasticsearchInside.Tests</RootNamespace>
-    <AssemblyName>ElasticsearchInside.Tests</AssemblyName>
+    <RootNamespace>RedisInside.Tests</RootNamespace>
+    <AssemblyName>RedisInside.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
