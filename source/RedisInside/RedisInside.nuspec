@@ -9,10 +9,14 @@
     <projectUrl>https://github.com/poulfoged/redis-inside</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/poulfoged/redis-inside/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Start Redis from .NET for integration tests. Contains redis runtime embedded in the dll.</description>
+    <description>
+      Start Redis from .NET for integration tests. Contains redis runtime embedded in the dll.
+      The nuget-version follows the Redis version - last digit may change for other reasons.
+    </description>
     <copyright>Copyright 2015</copyright>
     <tags>redis, integration, redis-64, caching</tags>
     <releaseNotes>
+3.0.300-alpha3 Alpha version of the Windows version of Redis
 2.8.2101.5 Turned off memory-mapped file
 2.8.2101.4 New cleanup moved to experimental
 2.8.2101.3 Reversed change to cleanup - was causing build errors
