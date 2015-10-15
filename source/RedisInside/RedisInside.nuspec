@@ -16,6 +16,7 @@
     <copyright>Copyright 2015</copyright>
     <tags>redis, integration, redis-64, caching</tags>
     <releaseNotes>
+3.0.300-beta1 Beta 1 of Redis
 3.0.300-alpha3 Alpha version of the Windows version of Redis
 2.8.2101.5 Turned off memory-mapped file
 2.8.2101.4 New cleanup moved to experimental
