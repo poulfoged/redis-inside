@@ -7,7 +7,7 @@ $redisDir = Get-ChildItem -Recurse $directory | Where-Object { $_.PSIsContainer 
 
 Remove-Item ..\..\source\RedisInside\Executables\redis-server.exe -Force
 
-..\tools\upx --brute $redisDir\redis-server.exe -o..\..\source\RedisInside\Executables\redis-server.exe
+copy $redisDir\tools\redis-server.exe ..\..\source\RedisInside\Executables\redis-server.exe
 
 cd ..
-Remove-Item temp -Force -Recurse
+Remove-Item temp -Recurse

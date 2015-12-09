@@ -7,7 +7,7 @@ using RedisInside.Executables;
 namespace RedisInside
 {
     /// <summary>
-    /// Extracts text from PDF's
+    /// Run integration-tests against Redis
     /// </summary>
     public class Redis : IDisposable
     {
