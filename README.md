@@ -12,7 +12,7 @@ Launch a Redis instance from just by creating a new instance of Redis. After tha
 ```c#
 using (var redis = new Redis())
 {
-    // connect to redis.Node here
+    // connect to redis.Endpoint here
 }
 
 ```
