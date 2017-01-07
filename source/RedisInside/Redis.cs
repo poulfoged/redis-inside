@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
@@ -93,13 +94,19 @@ namespace RedisInside
 
         private class Config : IConfig
         {
+            private static readonly ConcurrentDictionary<int, byte> usedPorts = new ConcurrentDictionary<int, byte>();
             private static readonly Random random = new Random();
             internal Action<string> logger;
             internal int port;
 
             public Config()
             {
-                port = random.Next(49152, 65535 + 1);
+                do
+                {
+                    port = random.Next(49152, 65535 + 1);
+                } while (usedPorts.ContainsKey(port));
+
+                usedPorts.AddOrUpdate(port, i => byte.MinValue, (i, b) => byte.MinValue);
                 logger = message => Trace.WriteLine(message);
             }
 
