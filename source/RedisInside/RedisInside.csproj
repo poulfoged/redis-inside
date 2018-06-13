@@ -15,6 +15,10 @@
     <Company />
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net451|AnyCPU'">
+    <DocumentationFile>bin\Debug\net451\RedisInside.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Executables\redis-server.exe" />
   </ItemGroup>
