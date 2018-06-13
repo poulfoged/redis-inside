@@ -35,7 +35,7 @@ Simply add the Nuget package:
 
 ## Requirements
 
-You'll need .NET Framework 4.5.1 or later on 64 bit Windows to use the precompiled binaries.
+You'll need .NET Framework 4.5.1 or dotnet core 2.0 or later on 64 bit Windows to use the precompiled binaries.
 
 ## License
 
