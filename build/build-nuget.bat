@@ -2,4 +2,4 @@
 cd %1
 cd ..
 del *.nupkg
-build\tools\nuget.exe pack source\RedisInside\RedisInside.csproj
+dotnet pack -c Release -o %cd% source\RedisInside\RedisInside.csproj
