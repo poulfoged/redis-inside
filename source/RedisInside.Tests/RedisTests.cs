@@ -79,7 +79,7 @@ namespace RedisInside.Tests
         }
 
         [Test]
-        public async Task Can_start_external_binary()
+        public void Can_start_external_binary()
         {
             using (var redis = new Redis(c => c.UseExternalBinary()))
             using (var client = ConnectionMultiplexer.Connect(redis.Endpoint.ToString()))

@@ -56,7 +56,7 @@ namespace RedisInside
                     throw new Exception("Could not locate redis-server binary.");
                 }
 
-                if (File.Exists(externalPath))
+                if (!File.Exists(externalPath))
                 {
                     throw new Exception($"Found invalid redis-server path (file does not exists or unreadable): {externalPath}");
                 }
