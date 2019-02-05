@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using RedisInside.Executables;
 
@@ -13,44 +16,39 @@ namespace RedisInside
     public class Redis : IDisposable
     {
         private bool _disposed;
-        private readonly Process process;
-        private readonly TemporaryFile executable;
-        private readonly Config config = new Config();
+        private readonly Process _process;
+        private readonly Config _config = new Config();
 
         public Redis(Action<IConfig> configuration = null)
         {
-            if (configuration != null)
-                configuration(config);
+            configuration?.Invoke(_config);
 
-            executable = new TemporaryFile(typeof(RessourceTarget).Assembly.GetManifestResourceStream(typeof(RessourceTarget), "redis-server.exe"), "exe");
+            var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            
+            var assembly = Assembly.GetExecutingAssembly();
+            var redisServerPath = Path.Combine(Path.GetDirectoryName(assembly.Location), "Executables", isWindows ? "redis-server.exe" : "redis-server");
 
-            var processStartInfo = new ProcessStartInfo(" \"" + executable.Info.FullName + " \"")
+            var windowsArgs = isWindows ? "--persistence-available no" : "";
+            var processStartInfo = new ProcessStartInfo(redisServerPath)
             {
                 UseShellExecute = false,
-                Arguments = string.Format("--port {0} --bind 127.0.0.1 --persistence-available no", config.port),
+                Arguments = $"--port {_config.port} --bind 127.0.0.1 {windowsArgs}",
                 WindowStyle = ProcessWindowStyle.Maximized,
                 CreateNoWindow = true,
-                LoadUserProfile = false,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-                StandardOutputEncoding = Encoding.ASCII,
+                StandardOutputEncoding = Encoding.ASCII
             };
 
-            process = Process.Start(processStartInfo);
-            process.ErrorDataReceived += (sender, eventargs) => config.logger.Invoke(eventargs.Data);
-            process.OutputDataReceived += (sender, eventargs) => config.logger.Invoke(eventargs.Data);
-            process.BeginOutputReadLine();
-        }
-
-        [Obsolete("Use Endpoint Instead")]
-        public string Node
-        {
-            get { return Endpoint.ToString(); }
+            _process = Process.Start(processStartInfo);
+            _process.ErrorDataReceived += (sender, eventargs) => _config.logger.Invoke(eventargs.Data);
+            _process.OutputDataReceived += (sender, eventargs) => _config.logger.Invoke(eventargs.Data);
+            _process.BeginOutputReadLine();
         }
 
         public EndPoint Endpoint
         {
-            get {return new IPEndPoint(IPAddress.Loopback, config.port);}
+            get {return new IPEndPoint(IPAddress.Loopback, _config.port);}
         }
 
         protected virtual void Dispose(bool disposing)
@@ -61,20 +59,19 @@ namespace RedisInside
 
             try
             {
-                process.CancelOutputRead();
-                process.Kill();
-                process.WaitForExit(2000);
+                _process.CancelOutputRead();
+                _process.Kill();
+                _process.WaitForExit(2000);
 
                 if (disposing)
                 {
-                    process.Dispose();
-                    executable.Dispose();
+                    _process.Dispose();
                 }
                 
             }
             catch (Exception ex)
             {
-                config.logger.Invoke(ex.ToString());
+                _config.logger.Invoke(ex.ToString());
             }
             
             _disposed = true;

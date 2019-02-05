@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net451;net46;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Start Redis from .NET for integration tests. Contains redis runtime embedded in the dll.</Description>
     <PackageTags>redis, integration, redis-64, caching</PackageTags>
     <Authors>Monzoom (Poul Foged)</Authors>
@@ -21,11 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Executables\redis-server.exe" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Executables\redis-server.exe" />
+    <Content Include="Executables\redis-server.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Executables\redis-server">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
