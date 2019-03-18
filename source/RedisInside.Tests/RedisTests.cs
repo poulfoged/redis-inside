@@ -48,6 +48,24 @@ namespace RedisInside.Tests
         }
 
         [Test]
+        public void Starting_multiple_on_same_port_yields_error()
+        {
+            // By using the same exact TCP port for both instances we
+            // guarantee that the second one will fail to initialize.
+            void Config(IConfig c) => c.Port(65530);
+
+            using (var redis = new Redis(Config))
+            {
+                Assert.Throws<System.InvalidOperationException>(() => {
+                    using (var redis2 = new Redis(Config))
+                    {
+                        Assert.Fail("redis2 should not have been created");
+                    }
+                });
+            }
+        }
+
+        [Test]
         public async Task Can_start_slave()
         {
 
