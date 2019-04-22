@@ -1,66 +1,124 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-
-namespace RedisInside
+﻿namespace RedisInside
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.InteropServices;
+
+    /// <summary>
+    /// Temporaty executable creation class
+    /// </summary>
     public class TemporaryFile : IDisposable
     {
-        private readonly FileInfo _fileInfo;
-        private bool _disposed;
+        private bool disposed;
 
-        public TemporaryFile(string extension = "tmp")
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemporaryFile"/> class.
+        /// </summary>
+        /// <param name="config">Configuration</param>
+        /// <param name="extension">File extension</param>
+        public TemporaryFile(IConfig config, string extension = "tmp")
         {
-            _fileInfo = new FileInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + "." + extension));
+            string path;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                path = config.WindowsTemporaryPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = Path.GetTempPath();
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                path = config.LinuxTemporaryPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    path = "~/tmp";
+                }
+
+                Directory.CreateDirectory(path);
+            }
+            else
+            {
+                throw new Exception("Unsupported Platform");
+            }
+
+            this.Info = new FileInfo(Path.Combine(path, Guid.NewGuid().ToString("N") + "." + extension));
         }
 
-        public TemporaryFile(Stream stream, string extension = "tmp") : this(extension)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemporaryFile"/> class.
+        /// </summary>
+        /// <param name="stream">Executable file stream</param>
+        /// <param name="config">Configuration</param>
+        /// <param name="extension">File extension</param>
+        public TemporaryFile(Stream stream, IConfig config, string extension = "tmp")
+            : this(config, extension)
         {
             using (stream)
-            using (var destination = _fileInfo.OpenWrite())
+            using (var destination = this.Info.OpenWrite())
+            {
                 stream.CopyTo(destination);
+            }
         }
 
-        public FileInfo Info 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="TemporaryFile"/> class.
+        /// </summary>
+        ~TemporaryFile()
         {
-            get { return _fileInfo; }
+            this.Dispose(false);
         }
 
+        /// <summary>
+        /// Gets file info
+        /// </summary>
+        public FileInfo Info { get; }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing">Is disposing?</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (this.disposed)
+            {
                 return;
+            }
+
             try
             {
                 if (disposing)
-                    _fileInfo.Delete();
+                {
+                    this.Info.Delete();
+                }
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
             }
-            _disposed = true;
 
+            this.disposed = true;
         }
 
-        ~TemporaryFile()
+        private void CopyTo(Stream result)
         {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public void CopyTo(Stream result)
-        {
-            using (var stream = _fileInfo.OpenRead())
+            using (var stream = this.Info.OpenRead())
+            {
                 stream.CopyTo(result);
+            }
 
             if (result.CanSeek)
+            {
                 result.Seek(0, SeekOrigin.Begin);
+            }
         }
     }
 }
