@@ -11,7 +11,7 @@ namespace RedisInside.Tests
         [Test]
         public void Can_configure()
         {
-            using (var redis = new Redis(i => i.Port(1234).LogTo(message => Trace.WriteLine(message))))
+            using (var redis = new Redis(new TestConfig(1234)))
             {
                 Assert.That(redis.Endpoint.ToString().EndsWith("1234"));
             }
@@ -75,6 +75,29 @@ namespace RedisInside.Tests
 
                 ////Assert
                 Assert.That(actualValue, Is.EqualTo("value"));
+            }
+        }
+
+        private class TestConfig : IConfig
+        {
+            public int Port { get; }
+
+            public string LinuxTemporaryPath => null;
+
+            public string WindowsTemporaryPath => null;
+
+            public string LinuxExecutablePath => null;
+
+            public string WindowsExecutablePath => null;
+
+            public TestConfig(int port)
+            {
+                this.Port = port;
+            }
+
+            public void Log(string message)
+            {
+                Trace.WriteLine(message);
             }
         }
     }
