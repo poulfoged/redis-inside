@@ -95,5 +95,19 @@ namespace RedisInside.Tests
                 Assert.That(actualValue, Is.EqualTo("value"));
             }
         }
+
+        [Test]
+        public void Can_start_external_binary()
+        {
+            using (var redis = new Redis(c => c.UseExternalBinary()))
+            using (var client = ConnectionMultiplexer.Connect(redis.Endpoint.ToString()))
+            {
+                client.GetDatabase().StringSet("key", "value");
+
+                var value = client.GetDatabase().StringGet("key");
+
+                Assert.That(value.ToString(), Is.EqualTo("value"));
+            }
+        }
     }
 }
